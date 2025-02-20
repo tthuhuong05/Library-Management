@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Books</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 30px 0;
+            background-color:rgb(147, 131, 44);
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            max-width: 600px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .input-group input {
+            width: 80%;
+            padding: 10px;
+            font-size: 1.1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .input-group button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            font-size: 1.1em;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .input-group button:hover {
+            background-color: #0056b3;
+        }
+
+        .book-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 0 20px;
+        }
+
+        .book-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .book-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .book-card img {
+            width: 100%;
+            height: auto;
+            border-bottom: 2px solidrgb(158, 139, 48);
+        }
+
+        .book-card .card-body {
+            padding: 15px;
+        }
+
+        .book-card .card-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .book-card .card-text {
+            font-size: 1.1em;
+            color: #666;
+        }
+
+        .card-footer {
+            padding: 10px;
+            background-color: #f8f9fa;
+            text-align: center;
+        }
+
+        .card-footer .btn {
+            margin: 5px;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 1.1em;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+
+  <h1>Search Books</h1>
+
+  <!-- Search Form -->
+  <div class="search-container">
+    <form method="GET" action="{{ url_for('search') }}">
+      <div class="input-group">
+        <input
+          type="text"
+          name="query"
+          placeholder="Search books by title..."
+          required
+        >
+        <button type="submit">Search</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Book Items -->
+  <div class="book-list">
+    {% for book in items %}
+      <div class="book-card">
+        <img src="{{ url_for('static', filename='uploads/' + book['image']) }}" alt="Book Image">
+        <div class="card-body">
+          <h5 class="card-title">{{ book['title'] }}</h5>
+          <p class="card-text">Author: {{ book['author'] }}</p>
+          <p class="card-text">Publisher: {{ book['publisher'] }}</p>
+          <p class="card-text">Year: {{ book['year'] }}</p>
+        </div>
+        <div class="card-footer">
+          <a href="{{ url_for('edit_book', book_id=book['id']) }}" class="btn btn-warning">Edit</a>
+          <form action="{{ url_for('delete_book', book_id=book['id']) }}" method="POST" style="display:inline;">
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+</body>
+</html>

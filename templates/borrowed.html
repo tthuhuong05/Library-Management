@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Borrow Book Success
+{% endblock %}
+
+{% block content %}
+<div class="container text-center mt-5">
+  <!-- Title Section -->
+  <h1 class="text-success mb-4" style="font-size: 3rem; font-weight: bold;">🎉 Borrowed Successfully! 🎉</h1>
+  
+  <!-- Description Section -->
+  <p class="mt-3" style="font-size: 1.5rem; color: #555;">Thank you for borrowing the book. We are processing your request and will notify you soon!</p>
+  
+  <!-- Back to Library Button -->
+  <a href="/library" class="btn btn-primary mt-4" style="font-size: 1.2rem; padding: 10px 30px; border-radius: 30px;">
+    Back to Library
+  </a>
+</div>
+
+<!-- Custom Styled Section -->
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-lg" style="border-radius: 15px; background-color: #f1f8ff;">
+        <div class="card-body text-center py-5">
+          <h3 class="card-title text-primary">Your Borrowing Process is Being Processed</h3>
+          <p class="card-text text-muted" style="font-size: 1.25rem;">We will confirm your borrowing soon, and you will be notified once it's approved.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

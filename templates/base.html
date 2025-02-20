@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Library Management System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <style>
+    /* Navbar styling */
+    .navbar {
+      background-color: #f8f9fa;
+    }
+    
+    .navbar-brand {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    /* Hero Section Styling */
+    .hero {
+      position: relative;
+      min-height: 60vh;
+      background-image: url('{{ url_for("static", filename="bg.jpg") }}');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .hero h1 {
+      font-size: 4rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero p {
+      font-size: 1.5rem;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Section Styling */
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .about {
+      background-color: #FFF9C4;
+      padding: 50px 0;
+    }
+
+    .about p {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+    }
+
+    /* Cards and Buttons Styling */
+    .feature-card {
+      background: #FFF;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      text-align: center;
+    }
+
+    .feature-card img {
+      border-radius: 10px;
+      margin-bottom: 15px;
+      height: 100px;
+      width: 100px;
+      object-fit: contain;
+    }
+
+    /* Footer Styling */
+    footer {
+      background-color: #f1f1f1;
+      padding: 20px;
+    }
+
+    footer p {
+      margin: 0;
+      font-size: 1rem;
+      color: #333;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/library">Library</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/library">User</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/statistics">Statistics</a>
+          </li>
+        </ul>
+        
+      </div>
+    </div>
+  </nav>
+
+ <!-- Hero Section -->
+<section class="hero text-center text-white d-flex align-items-center justify-content-center">
+    <div class="container-fluid p-0">
+      <div class="position-relative">
+        <!-- Chèn hình ảnh vào nền -->
+        <img src="{{ url_for('static', filename='Library.jpg') }}" alt="Promo Image" class="img-fluid w-100 h-100 object-cover">
+        <div class="position-absolute top-50 start-50 translate-middle text-white text-center">
+          <h1 class="display-4 fw-bold custom-title">Welcome to Library</h1>
+          <p class="lead fw-light custom-subtitle">Your library, your way. Manage books, users, and statistics seamlessly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+
+  
+  <!-- About Section -->
+  <section class="about">
+    <h2 class="section-title">About Our Library</h2>
+    <div class="container">
+      <p>
+        Our library offers a vast collection of books across various genres. We are committed to providing a great reading experience for our members, with an easy-to-use system to borrow, return, and manage books and user information.
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Library Management System. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
