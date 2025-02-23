@@ -1,10 +1,11 @@
 import sqlite3
-
+import json
 class UserModel:
     def __init__(self, db_path="database.db"):
         self.db_path = db_path
         self._create_tables()
         self.create_sales_table()
+        
 
     def _create_tables(self):
         """Create the necessary tables in the database if they don't exist."""
@@ -38,15 +39,18 @@ class UserModel:
         connection.close()
 
     def create_borrowed_book(self, user_id, title, borrow_date, return_date, status):
-        """Add a borrowed book record to the database."""
-        connection = sqlite3.connect(self.db_path)
-        cursor = connection.cursor()
-        cursor.execute("""
-            INSERT INTO borrowed_books (user_id, title, borrow_date, return_date, status)
-            VALUES (?, ?, ?, ?, ?)
-        """, (user_id, title, borrow_date, return_date, status))  # Including return_date here
-        connection.commit()
-        connection.close()
+      connection = sqlite3.connect(self.db_path)
+      cursor = connection.cursor()
+      cursor.execute("""
+        INSERT INTO borrowed_books (user_id, title, borrow_date, return_date, status)
+        VALUES (?, ?, ?, ?, ?)
+      """, (user_id, title, borrow_date, return_date, status))
+      connection.commit()
+      connection.close()
+
+      print(f"Inserted borrowed book for user {user_id} with title {title}")  # Debugging line
+
+
 
     def get_all_borrowed_books(self, user_id):
       connection = sqlite3.connect(self.db_path)
@@ -150,23 +154,36 @@ class UserModel:
 
         connection.commit()
         connection.close()
+      
+    def insert_sample_sales_data(self):
+        """Insert sample sales data into the sales table."""
+        connection = sqlite3.connect(self.db_path)
+        cursor = connection.cursor()
+
+        # Insert sample sales data
+        cursor.execute("INSERT INTO sales (sale_date, amount) VALUES ('2025-01-01', 500)")
+        cursor.execute("INSERT INTO sales (sale_date, amount) VALUES ('2025-01-15', 300)")
+        cursor.execute("INSERT INTO sales (sale_date, amount) VALUES ('2025-02-01', 700)")
+
+        connection.commit()
+        connection.close()
     
     def get_monthly_revenue(self):
       connection = sqlite3.connect(self.db_path)
       cursor = connection.cursor()
     
+      # Query to get monthly revenue data
       cursor.execute("""
         SELECT strftime('%Y-%m', sale_date) AS month, SUM(amount) AS total_revenue
         FROM sales
         GROUP BY month
         ORDER BY month DESC
       """)
-    
       results = cursor.fetchall()
       connection.close()
-
-      print(f"Monthly revenue data: {results}")  # Debugging line
     
+      print(f"Monthly revenue fetched: {results}")  # Debugging line
+
       monthly_revenue = [{'month': result[0], 'total_revenue': result[1]} for result in results]
       return monthly_revenue
 
@@ -192,7 +209,18 @@ class UserModel:
       cursor.execute("SELECT * FROM books WHERE id = ?", (book_id,))
       result = cursor.fetchone()
       connection.close()
-      return result
+    
+      if result:
+        return {
+            'id': result[0],
+            'title': result[1],
+            'author': result[2],
+            'publisher': result[3],
+            'year': result[4],
+            'status': result[5]
+        }
+      return None  # Nếu không tìm thấy sách, trả về None
+
     
     def get_available_books(self):
       """Lấy danh sách sách có sẵn để mượn từ cơ sở dữ liệu."""
@@ -226,6 +254,23 @@ class UserModel:
       connection.close()
       print(f"Book with ID {book_id} deleted.")  # Debugging line
       return True
+    
+    def add_borrowed_book_to_user_list(self, user_id, book_details):
+        """Add the borrowed book details as a JSON string in the user_list."""
+        connection = sqlite3.connect(self.db_path)
+        cursor = connection.cursor()
+
+        # Convert the book details to a JSON string
+        book_details_json = json.dumps(book_details)
+
+        # Insert the JSON data into user_list
+        cursor.execute("""
+            INSERT INTO user_list (user_id, book_details)
+            VALUES (?, ?)
+        """, (user_id, book_details_json))
+        
+        connection.commit()
+        connection.close()
 
     
     
