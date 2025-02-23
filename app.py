@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, redirect, url_for, current_app, flash
+from flask import Flask, render_template, request, session, redirect, url_for, current_app, flash, jsonify
 from controller.book_controller import BookController
 from controller.user_controller import UserController  # Import UserController
 import os
@@ -78,17 +78,7 @@ def search():
         items = []  # Return an empty list if no query is provided
     return render_template('search_books.html', items=items)
 
-# Route to borrow a book (change status to 'Borrowed')
-@app.route("/borrow_book/<int:book_id>")
-def borrow_book(book_id):
-    book = book_controller.get_book_by_id(book_id)
-    if book:
-        book_controller.update_book_status(book_id, 'Borrowed')
-        flash('Borrowed successfully. Waiting for system confirmation.', 'success')
-        return redirect(url_for('library'))
-    else:
-        flash('Book not found.', 'danger')
-        return redirect(url_for('library'))
+
     
 
 
@@ -101,6 +91,7 @@ def user_list():
 
 @app.route('/create_borrowed_book/<int:user_id>', methods=['GET', 'POST'])
 def create_borrowed_book(user_id):
+   
     if request.method == 'POST':
         title = request.form.get('title')
         borrow_date = request.form.get('borrow_date')
@@ -127,9 +118,11 @@ def return_book(book_id):
     flash("Book returned successfully!", "success")
     return redirect(url_for("library"))  # Redirect to the library page
 
-@app.route('/user/<user_id>/borrowed_books')
+@app.route('/user/<int:user_id>/borrowed_books')
 def user_borrowed_books(user_id):
-    return UserController().user_borrowed_books(user_id)
+    borrowed_books = user_controller.get_all_borrowed_books(user_id)  # Fetch borrowed books
+    return render_template('user_list.html', borrowed_books=borrowed_books)
+
 
 
 @app.route("/user/<int:user_id>/delete_borrowed_book/<int:book_id>", methods=["POST"])
@@ -148,9 +141,63 @@ def edit_borrowed_book(user_id, book_id):
 def dashboard():
     return user_controller.revenue_dashboard()
 
+
 @app.route("/borrow_book/<int:user_id>/<int:book_id>", methods=["POST"])
 def borrow_books(user_id, book_id):
-    return user_controller.borrow_books(user_id, book_id)
+    success = user_controller.borrow_books(user_id, book_id)
+    if success:
+        return redirect(url_for('user_borrowed_books', user_id=user_id))  # Redirect after successful borrow
+    else:
+        flash('Error borrowing book', 'danger')
+        return redirect(url_for('library'))  # Or handle error
+
+
+@app.route("/borrow_book/<int:book_id>", methods=["POST"])
+def borrow_book(book_id):
+    user_id = session.get('user_id')  # Assuming user_id is stored in the session after login
+    if not user_id:
+        flash('You must be logged in to borrow a book', 'danger')
+        return redirect(url_for('login'))  # Redirect if the user is not logged in
+
+    # Get book details from the database
+    book = book_controller.get_book_by_id(book_id)
+    if book and book['status'] == 'Available':
+        # Change book status to 'Borrowed'
+        book_controller.update_book_status(book_id, 'Borrowed')
+        
+        # Add to borrowed_books table
+        borrow_date = '2025-02-20'  # Sample borrow date
+        return_date = '2025-03-20'  # Sample return date
+        status = 'Borrowed'
+        
+        # Insert the book info into the borrowed_books table
+        user_controller.create_borrowed_book(user_id, book['title'], borrow_date, return_date, status)
+
+        # Prepare book details as a dictionary
+        book_details = {
+            'id': book_id,
+            'title': book['title'],
+            'borrow_date': borrow_date,
+            'return_date': return_date,
+            'status': status
+        }
+
+        # Add the book information as a JSON string into the user_list table
+        user_controller.add_borrowed_book_to_user_list(user_id, book_details)
+
+        # Return success response with book details
+        response = {
+            'success': True,
+            'message': 'Book borrowed successfully!',
+            'book': book_details
+        }
+
+        return jsonify(response)
+    else:
+        flash('This book is not available for borrowing', 'danger')
+        return jsonify({'success': False, 'message': 'Book not available'}), 400
+
+
 
 @app.route("/library/delete_available_book/<int:book_id>", methods=["POST"])
 def delete_available_book(book_id):
