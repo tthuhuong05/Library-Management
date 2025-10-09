@@ -3,6 +3,7 @@ name: Python Library CI/CD
 on:
   push:
     branches: [ "main" ]  # chạy khi push lên nhánh main
+  workflow_dispatch:
 
 jobs:
   test-and-build:
