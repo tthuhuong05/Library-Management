@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+  <!-- Bootstrap 5 CSS -->
+  <link 
+    rel="stylesheet" 
+    href="{{ url_for('static', filename='css/bootstrap.css') }}"
+  >
+  <!-- Bootstrap Icons -->
+  <link 
+    rel="stylesheet" 
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+  >
+  <style>
+    body {
+      background-color: #f4f7fc;  /* Nền sáng mịn, dễ chịu */
+    }
+
+    .register-container {
+      max-width: 480px;
+      margin: 80px auto;
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Đổ bóng mượt mà */
+    }
+
+    .register-container h1 {
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+      padding: 12px 0;
+      font-size: 1.1rem;
+      border-radius: 5px;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+      border-color: #004085;
+    }
+
+    .form-icon {
+      width: 3rem;
+      height: 3rem;
+      color: #007bff;
+      margin-bottom: 15px;
+    }
+
+    .input-group-text {
+      background-color: #f0f3f5;  /* Màu nền nhẹ cho icon */
+      border-right: 0;
+    }
+
+    .form-control {
+      border-left: 0; /* Không viền bên trái */
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    .form-control:focus {
+      border-color: #007bff;  /* Đổi màu khi focus */
+      box-shadow: 0 0 8px rgba(0, 123, 255, 0.5); /* Hiệu ứng focus nhẹ */
+    }
+
+    .form-select {
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    .mt-3 a {
+      text-decoration: none;
+      color: #007bff;
+    }
+
+    .mt-3 a:hover {
+      text-decoration: underline;
+    }
+
+    .footer-text {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="register-container">
+    <div class="text-center">
+      <i class="bi bi-person-plus-fill form-icon"></i>
+      <h1>Register</h1>
+    </div>
+    <form method="POST" action="/register" class="mt-4">
+      <!-- Username Field -->
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <div class="input-group">
+          <span class="input-group-text">
+            <i class="bi bi-person"></i>
+          </span>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="username" 
+            name="username" 
+            placeholder="Enter your username" 
+            required
+          >
+        </div>
+      </div>
+    
+      <!-- Password Field -->
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <div class="input-group">
+          <span class="input-group-text">
+            <i class="bi bi-lock-fill"></i>
+          </span>
+          <input 
+            type="password" 
+            class="form-control" 
+            id="password" 
+            name="password" 
+            placeholder="Enter your password" 
+            required
+          >
+        </div>
+      </div>
+    
+      <!-- Identification Field (this is the code you provided) -->
+      <div class="mb-3">
+        <label for="identification" class="form-label">Identification</label>
+        <div class="input-group">
+          <span class="input-group-text">
+            <i class="bi bi-card-text"></i>
+          </span>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="identification" 
+            name="identification" 
+            placeholder="Enter your identification"
+            required
+          >
+        </div>
+      </div>
+      
+      <!-- Tel Field -->
+<div class="mb-3">
+  <label for="tel" class="form-label">Telephone</label>
+  <div class="input-group">
+    <span class="input-group-text">
+      <i class="bi bi-telephone"></i>
+    </span>
+    <input 
+      type="text" 
+      class="form-control" 
+      id="tel" 
+      name="tel" 
+      placeholder="Enter your telephone number" 
+      required
+    >
+  </div>
+</div>
+<!-- Address Field -->
+<div class="mb-3">
+  <label for="address" class="form-label">Address</label>
+  <div class="input-group">
+    <span class="input-group-text">
+      <i class="bi bi-house-door"></i>
+    </span>
+    <input 
+      type="text" 
+      class="form-control" 
+      id="address" 
+      name="address" 
+      placeholder="Enter your address" 
+      required
+    >
+  </div>
+</div>
+
+      <!-- Role Field -->
+      <div class="mb-3">
+        <label for="role" class="form-label">Role</label>
+        <select 
+          class="form-select" 
+          id="role" 
+          name="role" 
+          required
+        >
+          <option value="customer">Customer</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+    
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary w-100">
+        <i class="bi bi-person-check"></i> Register
+      </button>
+    </form>
+    
+
+    <!-- Login Link -->
+    <p class="mt-3 text-center">
+      Already have an account? 
+      <a href="/login" class="text-primary">Login here</a>.
+    </p>
+  </div>
+
+  <!-- Footer Text -->
+  <div class="footer-text">
+    <p>By registering, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
+  </div>
+
+  <!-- Bootstrap 5 JS -->
+  <script 
+    src="{{ url_for('static', filename='js/bootstrap.bundle.js') }}"
+  ></script>
+</body>
+</html>

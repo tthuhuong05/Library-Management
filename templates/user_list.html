@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Borrowed Books</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome for Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
     <style>
@@ -54,8 +51,7 @@
             border-radius: 8px;
         }
 
-        table th,
-        table td {
+        table th, table td {
             padding: 15px;
             text-align: center;
             border: 1px solid #ddd;
@@ -74,79 +70,83 @@
             background-color: #e2f2e2;
         }
 
-        .status-available {
-            background-color: #4caf50;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 3px;
-        }
-
-        .status-borrowed {
-            background-color: #007bff;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 3px;
-        }
-
-        .status-overdue {
-            background-color: rgb(132, 53, 141);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 3px;
-        }
-
-        .status-lost {
-            background-color: #f44336;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 3px;
-        }
-
-        .icon {
-            font-size: 18px;
-        }
-
-        .btn i {
-            margin-right: 5px;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .card-body {
-            padding: 20px;
-        }
-
-        .card-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        .card-text {
-            font-size: 1rem;
-            margin-bottom: 10px;
-        }
-
-        .book-actions {
+        .table-actions {
             display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
+            justify-content: space-around;
         }
 
-        .book-actions form {
-            margin-right: 5px;
+        .edit-btn, .remove-btn {
+            font-size: 14px;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .edit-btn {
+            background-color: #ff9800;
+            border: none;
+            color: white;
+        }
+
+        .remove-btn {
+            background-color: #dc3545;
+            border: none;
+            color: white;
+        }
+
+        /* Navbar styling */
+        .navbar {
+            background-color: #007bff;
+            border-bottom: 2px solid #0056b3;
+        }
+
+        .navbar a {
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .navbar a:hover {
+            background-color: #0056b3;
+            color: white;
+            text-decoration: underline;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .navbar-toggler {
+            border-color: white;
+        }
+
+        /* Make navbar responsive */
+        .navbar-nav {
+            margin-left: auto;
+        }
+
+        /* Navbar transition effect */
+        .navbar a {
+            transition: background-color 0.3s, color 0.3s, transform 0.3s;
+        }
+
+        .navbar a:hover {
+            transform: scale(1.1);
         }
     </style>
 </head>
 
 <body>
+
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Library Management</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -161,94 +161,62 @@
                         <a class="nav-link" href="/user"><i class="fas fa-users"></i> User</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" href="/dashboard"><i class="fas fa-dashboard"></i> Dashboard</a>
-                  </li>
+                        <a class="nav-link" href="/borrowed"><i class="fas fa-book"></i> Book Borrowed</a>
+                      </li>
                 </ul>
-              </div>
+            </div>
         </div>
     </nav>
 
-    <h1>User Borrow Books</h1>
+    <!-- Heading Section -->
+    <h1>📝User Borrowed Books</h1>
 
-    <!-- Create Button -->
-    <div class="text-center mb-4">
-        <a href="{{ url_for('create_borrowed_book', user_id=user_id) }}" class="btn btn-success">
-            <i class="fas fa-plus-circle"></i> Create Borrow Book
-        </a>
+    <!-- Button to create new user -->
+    <div class="d-flex justify-content-center mb-3">
+        <a href="{{ url_for('create_user') }}" class="btn btn-success">Create New User</a>
     </div>
 
-    <!-- Table displaying borrowed books -->
-    {% if borrowed_books %}
-        <table>
-            <thead>
+    <!-- Table displaying user details -->
+    {% if users %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Identification</th>
+                <th>Tel</th>
+                <th>Address</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
                 <tr>
-                    <th>ID</th>
-                    <th>Title</th>
-                    <th>Borrowed Date</th>
-                    <th>Return Date</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.identification }}</td>
+                    <td>{{ user.tel }}</td>
+                    <td>{{ user.address }}</td>
+                    <td class="table-actions">
+                        <form method="POST" action="{{ url_for('edit_user', user_id=user.id) }}">
+                            <button type="submit" class="btn btn-warning btn-sm edit-btn">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                        </form>
+                        <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm remove-btn">
+                                <i class="fas fa-trash-alt"></i> Remove
+                            </button>
+                        </form>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                {% for book in borrowed_books %}
-                    <tr>
-                        <td>{{ book.id }}</td>
-                        <td>{{ book.title }}</td>
-                        <td>{{ book.borrow_date }}</td>
-                        <td>{{ book.return_date }}</td>
-                        <td>
-                            <span class="status-{{ book.status|lower }}">{{ book.status }}</span>
-                        </td>
-                        <td class="table-actions">
-                            <form method="POST" action="{{ url_for('edit_borrowed_book', user_id=user_id, book_id=book.id) }}">
-                                <button type="submit" class="btn btn-warning btn-sm"><i class="fas fa-edit icon"></i> Edit</button>
-                            </form>
-                            <form action="{{ url_for('delete_borrowed_book', user_id=user_id, book_id=book.id) }}" method="POST" style="display:inline;">
-                                <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt icon"></i> Remove</button>
-                            </form>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p class="text-center">No borrowed books available.</p>
-    {% endif %}
-
-    <!-- Available Books to Borrow -->
-    {% if books %}
-        <h3 class="mt-4">Available Books to Borrow</h3>
-        <div class="row">
-            {% for book in books %}
-                <div class="col-md-3 mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ book.title }}</h5>
-                            <p class="card-text">{{ book.borrow_date }}</p>
-                            <div class="book-actions">
-                                <!-- Edit and Remove buttons for available books -->
-                                <form method="POST" action="{{ url_for('edit_borrowed_book', user_id=user_id, book_id=book.id) }}">
-                                    <button type="submit" class="btn btn-warning btn-sm"><i class="fas fa-edit icon"></i> Edit</button>
-                                </form>
-                                <form action="{{ url_for('delete_available_book', book_id=book.id) }}" method="POST" style="display:inline;">
-                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt icon"></i> Remove</button>
-                                </form>                                
-                            </div>
-                            <a href="{{ url_for('borrow_books', user_id=user_id, book_id=book.id) }}" class="btn btn-success btn-sm mt-2">
-                                Borrow Book
-                            </a>
-                        </div>
-                    </div>
-                </div>
             {% endfor %}
-        </div>
+        </tbody>
+    </table>
     {% else %}
-        <p class="text-center">No books available to borrow.</p>
+    <p class="text-center">No users available.</p>
     {% endif %}
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Books</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             background-color: #f4f7fa;
             margin: 0;
             padding: 0;
@@ -15,100 +16,112 @@
 
         h1 {
             text-align: center;
-            padding: 30px 0;
-            background-color:rgb(147, 131, 44);
+            padding: 40px 0;
+            background-color: #7F8C4B;
             color: white;
             margin-bottom: 30px;
-            font-size: 2em;
+            font-size: 2.2em;
+            letter-spacing: 1px;
         }
 
-        .search-container {
+        /* Navbar Styling */
+        .navbar {
             display: flex;
             justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .input-group {
-            max-width: 600px;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .input-group input {
-            width: 80%;
-            padding: 10px;
-            font-size: 1.1em;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .input-group button {
-            padding: 10px 20px;
             background-color: #007bff;
+            padding: 10px 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            margin: 0 20px;
+        }
+
+        .nav-item i {
+            font-size: 1.8em;
             color: white;
-            border: none;
-            font-size: 1.1em;
-            border-radius: 5px;
-            cursor: pointer;
+            transition: color 0.3s ease;
         }
 
-        .input-group button:hover {
-            background-color: #0056b3;
+        .nav-item a {
+            text-decoration: none;
+            color: white;
+            font-size: 1.2em;
+            margin-left: 10px;
+            font-weight: 500;
+            transition: color 0.3s ease;
         }
 
+        .nav-item i:hover,
+        .nav-item a:hover {
+            color: #e0e0e0;
+        }
+
+        .nav-item a:active {
+            color: #F0E68C;
+        }
+
+        /* Book Items */
         .book-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            gap: 30px;
             padding: 0 20px;
         }
 
         .book-card {
             background-color: white;
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            transition: transform 0.3s;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .book-card:hover {
             transform: translateY(-10px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
         }
 
         .book-card img {
             width: 100%;
             height: auto;
-            border-bottom: 2px solidrgb(158, 139, 48);
+            border-bottom: 2px solid #F0E68C;
         }
 
-        .book-card .card-body {
-            padding: 15px;
+        .card-body {
+            padding: 20px;
         }
 
-        .book-card .card-title {
+        .card-title {
             font-size: 1.5em;
             color: #333;
             margin-bottom: 10px;
+            font-weight: 500;
         }
 
-        .book-card .card-text {
+        .card-text {
             font-size: 1.1em;
             color: #666;
+            margin-bottom: 10px;
         }
 
         .card-footer {
-            padding: 10px;
+            padding: 15px;
             background-color: #f8f9fa;
             text-align: center;
         }
 
         .card-footer .btn {
-            margin: 5px;
-            padding: 8px 15px;
-            border-radius: 5px;
+            padding: 10px 20px;
             font-size: 1.1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
         .btn-warning {
@@ -128,27 +141,31 @@
         .btn-danger:hover {
             background-color: #c82333;
         }
+
     </style>
 </head>
 <body>
 
   <h1>Search Books</h1>
 
-  <!-- Search Form -->
-  <div class="search-container">
-    <form method="GET" action="{{ url_for('search') }}">
-      <div class="input-group">
-        <input
-          type="text"
-          name="query"
-          placeholder="Search books by title..."
-          required
-        >
-        <button type="submit">Search</button>
-      </div>
-    </form>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="nav-item">
+        <i class="fas fa-home"></i>
+        <a href="/">Home</a>
+    </div>
+    <div class="nav-item">
+        <i class="fas fa-book-open"></i>
+        <a href="/library">Library</a>
+    </div>
+    <div class="nav-item">
+        <i class="fas fa-users"></i>
+        <a href="/user">User</a>
+    </div>
   </div>
-
+  <li class="nav-item">
+    <a class="nav-link" href="/borrowed"><i class="fas fa-book"></i> Book Borrowed</a>
+  </li>
   <!-- Book Items -->
   <div class="book-list">
     {% for book in items %}
@@ -159,12 +176,6 @@
           <p class="card-text">Author: {{ book['author'] }}</p>
           <p class="card-text">Publisher: {{ book['publisher'] }}</p>
           <p class="card-text">Year: {{ book['year'] }}</p>
-        </div>
-        <div class="card-footer">
-          <a href="{{ url_for('edit_book', book_id=book['id']) }}" class="btn btn-warning">Edit</a>
-          <form action="{{ url_for('delete_book', book_id=book['id']) }}" method="POST" style="display:inline;">
-            <button type="submit" class="btn btn-danger">Delete</button>
-          </form>
         </div>
       </div>
     {% endfor %}
