@@ -1,4 +1,4 @@
-Flask>2.3
-Pillow
-pytest>7
-pytest-flask
+Flask>=2.3
+Pillow>=10.0
+pytest>=7
+pytest-flask>=1.3
