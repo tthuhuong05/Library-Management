@@ -1,0 +1,4 @@
+Flask
+Pillow
+pytest              # Add this line
+pytest-flask  
