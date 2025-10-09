@@ -1,4 +1,4 @@
-Flask
+Flask>=2.3
 Pillow
-pytest              # Add this line
+pytest>=7
 pytest-flask  
