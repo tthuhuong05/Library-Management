@@ -8,8 +8,12 @@ on:
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
+
+    # Đổ secrets sang env để dùng an toàn trong if:
     env:
       PYTHONPATH: ${{ github.workspace }}
+      DH_USER:  ${{ secrets.DOCKERHUB_USERNAME || '' }}
+      DH_TOKEN: ${{ secrets.DOCKERHUB_TOKEN   || '' }}
 
     steps:
       - name: Checkout code
@@ -42,18 +46,18 @@ jobs:
           fi
           pytest -q
 
-      # ---- Chỉ login/push Docker khi tests pass và có đủ secrets ----
+      # ---- Chỉ chạy khi tests pass và có đủ thông tin Docker Hub ----
       - name: Log in to Docker Hub
-        if: ${{ success() && secrets.DOCKERHUB_USERNAME && secrets.DOCKERHUB_TOKEN }}
+        if: ${{ success() && env.DH_USER != '' && env.DH_TOKEN != '' }}
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}   # ví dụ: huong2005 (không phải email)
-          password: ${{ secrets.DOCKERHUB_TOKEN }}      # token tạo ở Docker Hub
+          username: ${{ env.DH_USER }}    # vd: huong2005 (không phải email)
+          password: ${{ env.DH_TOKEN }}   # PAT tạo trên Docker Hub
 
       - name: Build and push Docker image
-        if: ${{ success() && secrets.DOCKERHUB_USERNAME && secrets.DOCKERHUB_TOKEN }}
+        if: ${{ success() && env.DH_USER != '' && env.DH_TOKEN != '' }}
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/library-management:latest
+          tags: ${{ env.DH_USER }}/library-management:latest
