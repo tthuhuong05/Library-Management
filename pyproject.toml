@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "library-management"                  # tên gói (trên PyPI dùng dấu "-")
+version = "0.1.0"
+description = "A sample Library Management application/library"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Your Name", email = "you@example.com" }]
+
+# Khai báo phụ thuộc chạy (nếu có)
+dependencies = [
+  # "fastapi>=0.115",
+  # "uvicorn>=0.30"
+]
+
+[project.urls]
+Homepage = "https://github.com/<your-username>/Library-Management"
+
+# Nếu muốn cài đặt xong có lệnh CLI `library-management`
+[project.scripts]
+library-management = "library_management.app:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
