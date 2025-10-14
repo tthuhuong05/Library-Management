@@ -6,58 +6,83 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-and-build:
+  # 1) TEST
+  test:
     runs-on: ubuntu-latest
-
-    # Đổ secrets sang env để dùng an toàn trong if:
-    env:
-      PYTHONPATH: ${{ github.workspace }}
-      DH_USER:  ${{ secrets.DOCKERHUB_USERNAME || '' }}
-      DH_TOKEN: ${{ secrets.DOCKERHUB_TOKEN   || '' }}
-
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11']
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.9
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: ${{ matrix.python-version }}
           cache: 'pip'
 
-      - name: Install dependencies (safe)
+      - name: Install dependencies
         shell: bash
         run: |
           python -m pip install --upgrade pip
           pip install pytest
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt
-          else
-            echo "No requirements.txt, skipping..."
+          elif [ -f pyproject.toml ]; then
+            pip install .
           fi
 
-      - name: Run tests with pytest
+      - name: Run pytest (auto-smoke if missing tests)
         shell: bash
         run: |
           if ! ls tests/test_*.py >/dev/null 2>&1 && ! ls test_*.py >/dev/null 2>&1 ; then
-            echo "Creating smoke test because no tests were found..."
+            echo "No tests found -> create a smoke test"
             mkdir -p tests
             echo "def test_smoke(): assert True" > tests/test_smoke.py
           fi
           pytest -q
 
-      # ---- Chỉ chạy khi tests pass và có đủ thông tin Docker Hub ----
-      - name: Log in to Docker Hub
-        if: ${{ success() && env.DH_USER != '' && env.DH_TOKEN != '' }}
+  # 2) BUILD & PUSH DOCKER HUB (chạy khi tests xanh và có đủ secrets)
+  dockerhub:
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      DH_USER:  ${{ secrets.DOCKERHUB_USERNAME || '' }}
+      DH_TOKEN: ${{ secrets.DOCKERHUB_TOKEN   || '' }}
+      IMAGE_NAME: library-management
+    if: ${{ needs.test.result == 'success' && env.DH_USER != '' && env.DH_TOKEN != '' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ env.DH_USER }}    # vd: huong2005 (không phải email)
-          password: ${{ env.DH_TOKEN }}   # PAT tạo trên Docker Hub
+          username: ${{ env.DH_USER }}
+          password: ${{ env.DH_TOKEN }}
 
-      - name: Build and push Docker image
-        if: ${{ success() && env.DH_USER != '' && env.DH_TOKEN != '' }}
-        uses: docker/build-push-action@v5
+      - name: Extract Docker metadata (tags & labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DH_USER }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=sha
+          labels: |
+            org.opencontainers.image.source=${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: ${{ env.DH_USER }}/library-management:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
