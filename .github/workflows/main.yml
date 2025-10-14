@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  # 1) TEST (chỉ chạy smoke test của pipeline)
+  # 1) TEST — chỉ chạy smoke test do pipeline tạo
   test:
     runs-on: ubuntu-latest
     strategy:
@@ -22,7 +22,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ matrix['python-version'] }}
           cache: 'pip'
 
       - name: Install pytest
@@ -34,10 +34,10 @@ jobs:
         run: |
           mkdir -p tests
           echo "def test_smoke(): assert True" > tests/test_smoke.py
-          # Chỉ chạy file smoke, KHÔNG quét toàn bộ test của repo
+          # ✅ chỉ chạy đúng file smoke, không quét các test khác trong repo
           pytest -q tests/test_smoke.py
 
-  # 2) BUILD & PUSH DOCKER (chỉ chạy nếu đã cấu hình secrets Docker Hub)
+  # 2) BUILD & PUSH DOCKER (nếu đã cấu hình secrets Docker Hub)
   dockerhub:
     needs: test
     runs-on: ubuntu-latest
