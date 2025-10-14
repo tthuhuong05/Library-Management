@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11']
       fail-fast: false
     steps:
       - name: Checkout
@@ -22,7 +22,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix['python-version'] }}
+          python-version: ${{ matrix.python }}
           cache: 'pip'
 
       - name: Install pytest
@@ -34,11 +34,10 @@ jobs:
         run: |
           mkdir -p tests
           echo "def test_smoke(): assert True" > tests/test_smoke.py
-          # ✅ chỉ chạy đúng file smoke, không quét các test khác trong repo
           pytest -q tests/test_smoke.py
 
-  # 2) BUILD & PUSH DOCKER (nếu đã cấu hình secrets Docker Hub)
-    dockerhub:
+  # 2) BUILD & PUSH DOCKER (bỏ qua nếu thiếu secrets)
+  dockerhub:
     needs: test
     runs-on: ubuntu-latest
     env:
@@ -49,8 +48,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Thông báo và dừng nhẹ nếu thiếu secrets
-      - name: Skip Docker push if secrets missing
+      - name: Skip Docker steps if secrets missing
         if: ${{ env.DH_USER == '' || env.DH_TOKEN == '' }}
         run: |
           echo "⚠️ Missing DOCKERHUB_USERNAME or DOCKERHUB_TOKEN. Skipping Docker steps."
@@ -90,4 +88,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
