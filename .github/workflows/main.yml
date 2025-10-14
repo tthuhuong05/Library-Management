@@ -38,7 +38,7 @@ jobs:
           pytest -q
 
   # 2) BUILD & PUSH DOCKER HUB
-   dockerhub:
+  dockerhub:
     needs: test
     runs-on: ubuntu-latest
 
